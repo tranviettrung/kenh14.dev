@@ -5,9 +5,17 @@
     try {
       $con = connectDb();
 
-      print_r($_POST);
-      print_r($_FILES);
-      die();
+      extract($_POST);
+
+      // image
+      $image_filename = $_FILES['image']['name'];
+
+      $des = $_SERVER['DOCUMENT_ROOT'] . "/images/$image_filename";
+      move_uploaded_file($_FILES['image']['tmp_name'], $des);
+
+      $sql = "INSERT INTO posts(title, description, content, image, published_at, hot, active) VALUES ('$title', '$description', '$content', '$image_filename', NOW(), $hot, $active)";
+
+      $con->exec($sql);
     }
     catch (PDOException $ex) {
       echo $ex->getMessage();
@@ -77,6 +85,26 @@
             <div class="form-group">
               <label>Hình ảnh</label>
               <input type="file" name="image">
+            </div>
+
+            <div class="radio">
+              <label style="font-weight: bold">Bài viết hot:</label>
+              <label>
+                <input type="radio" name="hot" value="1">Bật
+              </label>
+              <label>
+                <input type="radio" name="hot" value="0" checked="checked">Tắt
+              </label>
+            </div>
+
+            <div class="radio">
+            <label style="font-weight: bold">Kích hoạt bài viết: </label>
+              <label>
+                <input type="radio" name="active" value="1" checked="checked">Bật
+              </label>
+              <label>
+                <input type="radio" name="active" value="0">Tắt
+              </label>
             </div>
 
             <div class="checkbox">
