@@ -3,13 +3,31 @@
 
 	try {
   	  $con = connectDb();
+
+  	  // Lay cac bai viet hot
   	  $sql = "SELECT * FROM posts WHERE active = 1 AND hot = 1 ORDER BY published_at desc";
 
   	  $stmt = $con->prepare($sql);
   	  $stmt->execute();
-
   	  $stmt->setFetchMode(PDO::FETCH_ASSOC);
+
   	  $hot_news = $stmt->fetchAll();
+
+  	  // Lay các bai viet moi nhat
+  	  $sql = "SELECT * FROM posts WHERE active = 1 AND hot = 0 ORDER BY published_at desc";
+  	  $stmt = $con->prepare($sql);
+  	  $stmt->execute();
+  	  $stmt->setFetchMode(PDO::FETCH_ASSOC);
+
+  	  $latest_news = $stmt->fetchAll();
+
+  	  // Lay cac danh muc
+  	  $sql = "SELECT * FROM categories";
+  	  $stmt = $con->prepare($sql);
+  	  $stmt->execute();
+  	  $stmt->setFetchMode(PDO::FETCH_ASSOC);
+
+  	  $categories = $stmt->fetchAll();
   	}
   	catch (PDOException $ex) {
   	  echo $ex->getMessage();
@@ -63,30 +81,12 @@
 		<div class="container">
 			<ul>
 				<li><a href=""><i class="fa fa-home" aria-hidden="true"></i></a></li>
-				<li>
-					<a href="">Đời sống</a>
-					<ul class="dropdown">
-						<li><a href="">Đời sống</a></li>
-						<li><a href="">Âm nhạc</a></li>
-						<li><a href="">Phim ảnh</a></li>
-					</ul>
-				</li>
-				<li>
-					<a href="">Âm nhạc</a>
-					<ul class="dropdown">
-						<li>
-							<a href="">Đời sống</a>
-							<ul class="dropdown">
-								<li><a href="">Đời sống</a></li>
-								<li><a href="">Âm nhạc</a></li>
-								<li><a href="">Phim ảnh</a></li>
-							</ul>
-						</li>
-						<li><a href="">Âm nhạc</a></li>
-						<li><a href="">Phim ảnh</a></li>
-					</ul>
-				</li>
-				<li><a href="">Phim ảnh</a></li>
+
+				<?php foreach($categories as $category): ?>
+					<li><a href=""><?= $category['name'] ?></a></li>
+				<?php endforeach; ?>
+				
+
 			</ul>
 		</div>
 	</div>
@@ -96,14 +96,13 @@
 			<div class="row">
 				<div class="col col-8">
 					<div id="hot-news" class="clearfix">
-
 						<?php for($i = 0; $i <= 1; $i++): ?>
 							<div class="news">
 								<div class="news-image cover-image">
 									<img src="images/<?= $hot_news[$i]['image'] ?>">
 								</div>
 								<div class="info">
-									<h2><a href=""><?= $hot_news[$i]['title'] ?></a></h2>
+									<h2><a href="show.php?id=<?= $hot_news[$i]['id'] ?>"><?= $hot_news[$i]['title'] ?></a></h2>
 									<p class="brief"><?= $hot_news[$i]['description'] ?></p>
 								</div>
 							</div>
@@ -143,57 +142,24 @@
 					</div>
 
 					<div id="news-list">
-
-						<div class="news">
-							<div class="row">
-								<div class="col col-4">
-									<div class="cover-image">
-										<img src="images/news1.jpg">
+						<?php foreach($latest_news as $news): ?>
+							<div class="news">
+								<div class="row">
+									<div class="col col-4">
+										<div class="cover-image">
+											<img src="images/<?= $news['image'] ?>">
+										</div>
 									</div>
-								</div>
-								<div class="col col-8">
-									<div class="info">
-										<h3><a href="">Quận 1 dỡ mái hiên, xử phạt tòa nhà Saigon Centre 58 triệu đồng phí cưỡng chế</a></h3>
-										<p><a href="">Xã Hội</a> - <span>41 phút trước</span></p>
-										<p class="brief">Lực lượng chức năng quận 1 TP HCM đã xử phạt chủ tòa nhà Saigon Centre - Trung tâm thương mại cao cấp tại TP HCM</p>
-									</div>
-								</div>
-							</div>
-						</div>
-
-						<div class="news">
-							<div class="row">
-								<div class="col col-4">
-									<div class="cover-image">
-										<img src="images/news1.jpg">
-									</div>
-								</div>
-								<div class="col col-8">
-									<div class="info">
-										<h3><a href="">Quận 1 dỡ mái hiên, xử phạt tòa nhà Saigon Centre 58 triệu đồng phí cưỡng chế</a></h3>
-										<p><a href="">Xã Hội</a> - <span>41 phút trước</span></p>
-										<p class="brief">Lực lượng chức năng quận 1 TP HCM đã xử phạt chủ tòa nhà Saigon Centre - Trung tâm thương mại cao cấp tại TP HCM</p>
+									<div class="col col-8">
+										<div class="info">
+											<h3><a href=""><?= $news['title'] ?></a></h3>
+											<p><a href="">Xã Hội</a> - <span>41 phút trước</span></p>
+											<p class="brief"><?= $news['description'] ?></p>
+										</div>
 									</div>
 								</div>
 							</div>
-						</div>
-
-						<div class="news">
-							<div class="row">
-								<div class="col col-4">
-									<div class="cover-image">
-										<img src="images/news1.jpg">
-									</div>
-								</div>
-								<div class="col col-8">
-									<div class="info">
-										<h3><a href="">Quận 1 dỡ mái hiên, xử phạt tòa nhà Saigon Centre 58 triệu đồng phí cưỡng chế</a></h3>
-										<p><a href="">Xã Hội</a> - <span>41 phút trước</span></p>
-										<p class="brief">Lực lượng chức năng quận 1 TP HCM đã xử phạt chủ tòa nhà Saigon Centre - Trung tâm thương mại cao cấp tại TP HCM</p>
-									</div>
-								</div>
-							</div>
-						</div>
+						<?php endforeach; ?>
 
 						<div class="trend-list">
 
