@@ -10,9 +10,6 @@
 
   	  $stmt->setFetchMode(PDO::FETCH_ASSOC);
   	  $hot_news = $stmt->fetchAll();
-
-  	  print_r($hot_news);
-  	  die();
   	}
   	catch (PDOException $ex) {
   	  echo $ex->getMessage();
